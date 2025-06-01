@@ -1,1061 +1,40 @@
---Fly Hero
-local plr = game.Players.LocalPlayer
-local Players = game:GetService("Players")
-local LocalPlayer = Players.LocalPlayer
-local following = false
-local targetPlayer = nil
-local targetName = txt
-local chr = plr.Character
-local hum = chr and chr:FindFirstChildWhichIsA("Humanoid")
-local tpHero = false
-local flyingHero = false
-local speedsHero = 1
-local flyHero = true
-local animTrack
-local function FlyHero()
- 	flyHero = true
-    local Players = game:GetService("Players")
-    local player = Players.LocalPlayer
-    function applyVelocity(direction)
-        local character = player.Character or player.CharacterAdded:Wait()
-        local Torso = character:WaitForChild("UpperTorso")
-        local bvw = Instance.new("BodyVelocity")
-        bvw.Velocity = Vector3.new(0, direction, 0)
-        bvw.MaxForce = Vector3.new(9e9, 9e9, 9e9)
-        bvw.Parent = Torso
-        task.wait(1)
-        bvw:Destroy()
-    end
-    task.spawn(function()
-        while flyHero do
-            applyVelocity(2)
-            applyVelocity(-2)
-        end
-    end)
-	flyingHero = true
-	local plr = game.Players.LocalPlayer
-	local chr = plr.Character
-	local UpperTorso = chr:FindFirstChild("UpperTorso") or chr:FindFirstChild("Torso")
-	for i = 1, speedsHero do
-		spawn(function()
-			tpHero = true
-			local hb = game:GetService("RunService").Heartbeat
-			local plr = game.Players.LocalPlayer
-			local chr = plr.Character
-			local hum = chr and chr:FindFirstChildWhichIsA("Humanoid")
-			while tpHero and hb:Wait() do
-				if hum and hum.MoveDirection.Magnitude > 0 then
-					chr:TranslateBy(hum.MoveDirection)
-				end
-			end
-		end)
-	end
-	plr.Character.Animate.Disabled = true
-	local plr = game.Players.LocalPlayer
-	local chr = plr.Character
-	local hum = chr:FindFirstChildOfClass("Humanoid") or chr:FindFirstChildOfClass("AnimationController")
-	for i, v in next, hum:GetPlayingAnimationTracks() do
-		v:AdjustSpeed(0)
-	end
-	hum:SetStateEnabled(Enum.HumanoidStateType.Climbing, false)
-	hum:SetStateEnabled(Enum.HumanoidStateType.FallingDown, false)
-	hum:SetStateEnabled(Enum.HumanoidStateType.Flying, true)
-	hum:SetStateEnabled(Enum.HumanoidStateType.Freefall, false)
-	hum:SetStateEnabled(Enum.HumanoidStateType.GettingUp, false)
-	hum:SetStateEnabled(Enum.HumanoidStateType.Jumping, false)
-	hum:SetStateEnabled(Enum.HumanoidStateType.Landed, false)
-	hum:SetStateEnabled(Enum.HumanoidStateType.Physics, false)
-	hum:SetStateEnabled(Enum.HumanoidStateType.PlatformStanding, false)
-	hum:SetStateEnabled(Enum.HumanoidStateType.Ragdoll, false)
-	hum:SetStateEnabled(Enum.HumanoidStateType.Running, false)
-	hum:SetStateEnabled(Enum.HumanoidStateType.RunningNoPhysics, false)
-	hum:SetStateEnabled(Enum.HumanoidStateType.Seated, false)
-	hum:SetStateEnabled(Enum.HumanoidStateType.StrafingNoPhysics, false)
-	hum:SetStateEnabled(Enum.HumanoidStateType.Swimming, false)
-	hum:ChangeState(Enum.HumanoidStateType.Swimming)
-	if UpperTorso then
-		local flyBV = Instance.new("BodyVelocity", UpperTorso)
-		flyBV.velocity = Vector3.new(0, 0.1, 0)
-		flyBV.maxForce = Vector3.new(9e9, 9e9, 9e9)
-		flyBV.Name = "flyBVHero"
-	end
-    local player = game.Players.LocalPlayer
-    local Play = true
-    local character = player.Character or player.CharacterAdded:Wait()
-    local humanoid = character:WaitForChild("Humanoid")
-    local animator = humanoid:FindFirstChildOfClass("Animator")
-    if not animator then
-        animator = Instance.new("Animator")
-        animator.Parent = humanoid
-    end
-    local animation = Instance.new("Animation")
-    animation.AnimationId = "rbxassetid://10714347256"
-    animTrack = animator:LoadAnimation(animation)
-    animTrack:Play()
-    task.wait(4)
-    animTrack:AdjustSpeed(0)
-end
-
-local function unFlyHero()
-	animTrack:Stop()
-   flyHero = false
-	flyingHero = false
-	tpHero = false
-	local plr = game.Players.LocalPlayer
-	local chr = plr.Character
-	local hum = chr:FindFirstChildWhichIsA("Humanoid")
-	local UpperTorso = chr:FindFirstChild("UpperTorso") or chr:FindFirstChild("Torso")
-	if hum then
-		local statesToEnable = {
-			Enum.HumanoidStateType.Climbing,
-			Enum.HumanoidStateType.FallingDown,
-			Enum.HumanoidStateType.Freefall,
-			Enum.HumanoidStateType.GettingUp,
-			Enum.HumanoidStateType.Jumping,
-			Enum.HumanoidStateType.Landed,
-			Enum.HumanoidStateType.Physics,
-			Enum.HumanoidStateType.PlatformStanding,
-			Enum.HumanoidStateType.Ragdoll,
-			Enum.HumanoidStateType.Running,
-			Enum.HumanoidStateType.RunningNoPhysics,
-			Enum.HumanoidStateType.Seated,
-			Enum.HumanoidStateType.StrafingNoPhysics,
-			Enum.HumanoidStateType.Swimming
-		}
-		for _, state in pairs(statesToEnable) do
-			pcall(function()
-				hum:SetStateEnabled(state, true)
-			end)
-		end
-		hum:ChangeState(Enum.HumanoidStateType.Running)
-	end
-    if UpperTorso and UpperTorso:FindFirstChild("flyBVHero") then
-        UpperTorso.flyBVHero:Destroy()
-    end
-    local animateScript = chr:WaitForChild("Animate")
-    animateScript.Disabled = false
-end
-plr.Character.Humanoid.Died:Connect(function()
-	if flyHero then
-		unFlyHero()
-	end
-end)
---NoClip
-local plr = game.Players.LocalPlayer
-local RunService = game:GetService("RunService")
-local character = plr.Character or plr.CharacterAdded:Wait()
-local heartbeatConnection
-
-local function NoClip()
-    heartbeatConnection = RunService.Heartbeat:Connect(function()
-        for i, v in pairs(character:GetChildren()) do
-            if v:IsA("BasePart") then
-                v.CanCollide = false
-            end
-        end
-    end)
-end
-
-local function Clip()
-    if heartbeatConnection then
-        heartbeatConnection:Disconnect()
-        heartbeatConnection = nil
-    end
-    for i, v in pairs(character:GetChildren()) do
-        if v:IsA("BasePart") then
-            v.CanCollide = true
-        end
-    end
-end
---Swim
-local plr = game.Players.LocalPlayer
-local swim = false
-function Swim()
-	swim = true
-	local char = plr.Character or plr.CharacterAdded:Wait()
-	local hum = char:FindFirstChildOfClass("Humanoid")
-	local torso = char:FindFirstChild("UpperTorso")
-	if not hum or not torso then return end
-	local bv = Instance.new("BodyVelocity")
-	bv.Name = "Swim"
-	bv.Velocity = Vector3.new(0, 0.1, 0)
-	bv.MaxForce = Vector3.new(9e9, 9e9, 9e9)
-	bv.Parent = torso
-
-	for _, state in pairs(Enum.HumanoidStateType:GetEnumItems()) do
-		hum:SetStateEnabled(state, false)
-	end
-	hum:ChangeState(Enum.HumanoidStateType.Swimming)
-	spawn(function()
-		local rs = game:GetService("RunService").Heartbeat
-		while swim and rs:Wait() do
-			if hum.MoveDirection.Magnitude > 0 then
-				char:TranslateBy(hum.MoveDirection)
-			end
-		end
-	end)
-end
-function UnSwim()
-	swim = false
-	local char = plr.Character or plr.CharacterAdded:Wait()
-	local hum = char:FindFirstChildOfClass("Humanoid")
-	local torso = char:FindFirstChild("UpperTorso")
-	if not hum or not torso then return end
-
-	local bv = torso:FindFirstChild("Swim")
-	if bv then bv:Destroy() end
-
-	for _, state in pairs(Enum.HumanoidStateType:GetEnumItems()) do
-		hum:SetStateEnabled(state, true)
-	end
-
-	hum:ChangeState(Enum.HumanoidStateType.Running)
-end
-plr.Character.Humanoid.Died:Connect(function()
-	if swim then
-		UnSwim()
-	end
-end)
---Spin
-local plr = game.Players.LocalPlayer
-local humanoidRootPart = plr.Character:WaitForChild("HumanoidRootPart")
-local spinning = false
-local spinSpeed = 30
-local function Spin()
-	while spinning do
-		if humanoidRootPart then
-			humanoidRootPart.CFrame *= CFrame.Angles(0, math.rad(spinSpeed), 0)
-		end
-		task.wait(1/60)
-	end
-end
---Free Cam
-local plr = game.Players.LocalPlayer
-local hum = plr.Character.HumanoidRootPart
-local UIS = game:GetService("UserInputService")
-local RS = game:GetService("RunService")
-local cam = workspace.CurrentCamera
-local freecamEnabled = false
-local keysDown = {}
-local rotating = false
-local touchPos = nil
-local speed
-local function activateFreecam()
-	if not plr.Character or not plr.Character:FindFirstChild("UpperTorso") then return end
-	local UpperTorso = plr.Character.UpperTorso
-	local onMobile = not UIS.KeyboardEnabled
-	cam.CameraType = Enum.CameraType.Scriptable
-	speed = 1
-	local sens = 0.3
-	if onMobile then sens *= 2 end
-	keysDown = {}
-	rotating = false
-	hum.Anchored = true
-	local function renderStepped()
-		if not freecamEnabled then return end
-		if rotating then
-			local delta = UIS:GetMouseDelta()
-			local cf = cam.CFrame
-			local yAngle = cf:ToEulerAngles(Enum.RotationOrder.YZX)
-			local newAmount = math.deg(yAngle) + delta.Y
-			if newAmount > 65 or newAmount < -65 then
-				if not (yAngle < 0 and delta.Y < 0) and not (yAngle > 0 and delta.Y > 0) then
-					delta = Vector2.new(delta.X, 0)
-				end
-			end
-			cf *= CFrame.Angles(-math.rad(delta.Y), 0, 0)
-			cf = CFrame.Angles(0, -math.rad(delta.X), 0) * (cf - cf.Position) + cf.Position
-			cf = CFrame.lookAt(cf.Position, cf.Position + cf.LookVector)
-			if delta ~= Vector2.new(0, 0) then
-				cam.CFrame = cam.CFrame:Lerp(cf, sens)
-			end
-			UIS.MouseBehavior = Enum.MouseBehavior.LockCurrentPosition
-		else
-			UIS.MouseBehavior = Enum.MouseBehavior.Default
-		end
-		if keysDown["Enum.KeyCode.W"] then
-			cam.CFrame *= CFrame.new(Vector3.new(0, 0, -speed))
-		end
-		if keysDown["Enum.KeyCode.A"] then
-			cam.CFrame *= CFrame.new(Vector3.new(-speed, 0, 0))
-		end
-		if keysDown["Enum.KeyCode.S"] then
-			cam.CFrame *= CFrame.new(Vector3.new(0, 0, speed))
-		end
-		if keysDown["Enum.KeyCode.D"] then
-			cam.CFrame *= CFrame.new(Vector3.new(speed, 0, 0))
-		end
-	end
-	RS:BindToRenderStep("FreecamRender", Enum.RenderPriority.Camera.Value, renderStepped)
-	local validKeys = {"Enum.KeyCode.W", "Enum.KeyCode.A", "Enum.KeyCode.S", "Enum.KeyCode.D"}
-	UIS.InputBegan:Connect(function(Input)
-		for i, key in pairs(validKeys) do
-			if key == tostring(Input.KeyCode) then
-				keysDown[key] = true
-			end
-		end
-		if Input.UserInputType == Enum.UserInputType.MouseButton2 or (Input.UserInputType == Enum.UserInputType.Touch and UIS:GetMouseLocation().X > (cam.ViewportSize.X / 2)) then
-			rotating = true
-		end
-		if Input.UserInputType == Enum.UserInputType.Touch then
-			if Input.Position.X < cam.ViewportSize.X / 2 then
-				touchPos = Input.Position
-			end
-		end
-	end)
-	UIS.InputEnded:Connect(function(Input)
-		for key, _ in pairs(keysDown) do
-			if key == tostring(Input.KeyCode) then
-				keysDown[key] = false
-			end
-		end
-		if Input.UserInputType == Enum.UserInputType.MouseButton2 or (Input.UserInputType == Enum.UserInputType.Touch and UIS:GetMouseLocation().X > (cam.ViewportSize.X / 2)) then
-			rotating = false
-		end
-		if Input.UserInputType == Enum.UserInputType.Touch and touchPos then
-			if Input.Position.X < cam.ViewportSize.X / 2 then
-				touchPos = nil
-				keysDown["Enum.KeyCode.W"] = false
-				keysDown["Enum.KeyCode.A"] = false
-				keysDown["Enum.KeyCode.S"] = false
-				keysDown["Enum.KeyCode.D"] = false
-			end
-		end
-	end)
-	UIS.TouchMoved:Connect(function(input)
-		if touchPos then
-			if input.Position.X < cam.ViewportSize.X / 2 then
-				if input.Position.Y < touchPos.Y then
-					keysDown["Enum.KeyCode.W"] = true
-					keysDown["Enum.KeyCode.S"] = false
-				else
-					keysDown["Enum.KeyCode.W"] = false
-					keysDown["Enum.KeyCode.S"] = true
-				end
-				if input.Position.X < (touchPos.X - 15) then
-					keysDown["Enum.KeyCode.A"] = true
-					keysDown["Enum.KeyCode.D"] = false
-				elseif input.Position.X > (touchPos.X + 15) then
-					keysDown["Enum.KeyCode.A"] = false
-					keysDown["Enum.KeyCode.D"] = true
-				else
-					keysDown["Enum.KeyCode.A"] = false
-					keysDown["Enum.KeyCode.D"] = false
-				end
-			end
-		end
-	end)
-end
-local function deactivateFreecam()
-	freecamEnabled = false
-	cam.CameraType = Enum.CameraType.Custom
-   hum.Anchored = false
-	UIS.MouseBehavior = Enum.MouseBehavior.Default
-	RS:UnbindFromRenderStep("FreecamRender")
-end
-plr.Character.Humanoid.Died:Connect(function()
-	if freecamEnabled then
-		deactivateFreecam()
-	end
-end)
 local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/NICKISBAD/Nick-s-Modded-KAVO-Lib/main/Nick'sModdedKavoLib.lua"))()
 local Window = Library.CreateLib("Un Hub: Fe | Make by LE_GO89", "DarkTheme")
 local player = game.Players.LocalPlayer
-local Tab = Window:NewTab("Main")
-local Section = Tab:NewSection("Main")
-Section:NewTextBox("Fly Speed", "Change the fly speed.", function(txt)
-	speedsHero = tonumber(txt)
-	if flyingHero then
-		unFlyHero()
-		task.wait(0)
-		FlyHero()
-	end
-end)
 
-Section:NewTextBox("Spin Speed", "Change the spin speed.", function(txt)
-	spinSpeed = tonumber(txt)
-	if spinning then
-		spinning = false
-		task.wait(0.1)
-		spinning = true
-		Spin()
-	end
-end)
-
-Section:NewTextBox("Free Cam Speed", "Change the free cam speed.", function(txt)
-	speed = tonumber(txt)
-end)
-
-Section:NewToggle("[Fe] Fly", "Make you fly like a hero.", function(state)
-    if state then
-        FlyHero()
-    else
-        unFlyHero()
-    end
-end)
-
-Section:NewToggle("[Fe] Swim", "Make you swim.", function(state)
-    if state then
-        Swim()
-    else
-        UnSwim()
-    end
-end)
-
-Section:NewToggle("[Fe] NoClip", "Make you can walk through wall.", function(state)
-    if state then
-        NoClip()
-    else
-        Clip()
-    end
-end)
-
-Section:NewToggle("[Fe] Spin", "Make you spin.", function(state)
-    if state then
-    	spinning = true
-        Spin()
-    else
-        spinning = false
-    end
-end)
-
-Section:NewToggle("Free Cam", "Make you in to free cam mode.", function(state)
-    if state then
-    	  if not freecamEnabled then
-			  freecamEnabled = true
-			  activateFreecam()
-		  end
-    else
-        if freecamEnabled then
-			  deactivateFreecam()
-		end
-    end
-end)
 local Tab = Window:NewTab("Fe Animation")
 local Section = Tab:NewSection("Fe Animation")
-Section:NewToggle("[Fe] Ninja", "Make your animation to Ninja animation.", function(state)
-    if state then
-    	loadstring(game:HttpGet("https://pastebin.com/raw/dUbsqd0z"))()
-    else
-        loadstring(game:HttpGet("https://pastebin.com/raw/4KTkXYkZ"))()
-    end
-end)
 
-Section:NewToggle("[Fe] Cartoony", "Make your animation to Cartoony animation.", function(state)
-    if state then
-    	loadstring(game:HttpGet("https://pastebin.com/raw/ETz1WFmG"))()
-    else
-        loadstring(game:HttpGet("https://pastebin.com/raw/4KTkXYkZ"))()
-    end
-end)
-
-Section:NewToggle("[Fe] Levitation", "Make your animation to Levitation animation.", function(state)
-    if state then
-    	loadstring(game:HttpGet("https://pastebin.com/raw/fdz2UiaB"))()
-    else
-        loadstring(game:HttpGet("https://pastebin.com/raw/4KTkXYkZ"))()
-    end
-end)
-
-Section:NewToggle("[Fe] Robot", "Make your animation to Robot animation.", function(state)
-    if state then
-    	loadstring(game:HttpGet("https://pastebin.com/raw/ej0buQpW"))()
-    else
-        loadstring(game:HttpGet("https://pastebin.com/raw/4KTkXYkZ"))()
-    end
-end)
-
-Section:NewToggle("[Fe] Stylish", "Make your animation to Stylish animation.", function(state)
-    if state then
-    	loadstring(game:HttpGet("https://pastebin.com/raw/t4V1984j"))()
-    else
-        loadstring(game:HttpGet("https://pastebin.com/raw/4KTkXYkZ"))()
-    end
-end)
-
-Section:NewToggle("[Fe] Vampire", "Make your animation to Vampire animation.", function(state)
-    if state then
-    	loadstring(game:HttpGet("https://pastebin.com/raw/0mJbREvZ"))()
-    else
-        loadstring(game:HttpGet("https://pastebin.com/raw/4KTkXYkZ"))()
-    end
-end)
-
-Section:NewToggle("[Fe] Zombie", "Make your animation to Zombie animation.", function(state)
-    if state then
-    	loadstring(game:HttpGet("https://pastebin.com/raw/Rkf1vBNG"))()
-    else
-        loadstring(game:HttpGet("https://pastebin.com/raw/4KTkXYkZ"))()
-    end
---Fly Hero
-local plr = game.Players.LocalPlayer
-local Players = game:GetService("Players")
-local LocalPlayer = Players.LocalPlayer
-local following = false
-local targetPlayer = nil
-local targetName = txt
-local chr = plr.Character
-local hum = chr and chr:FindFirstChildWhichIsA("Humanoid")
-local tpHero = false
-local flyingHero = false
-local speedsHero = 1
-local flyHero = true
-local animTrack
-local function FlyHero()
- 	flyHero = true
-    local Players = game:GetService("Players")
-    local player = Players.LocalPlayer
-    function applyVelocity(direction)
-        local character = player.Character or player.CharacterAdded:Wait()
-        local Torso = character:WaitForChild("UpperTorso")
-        local bvw = Instance.new("BodyVelocity")
-        bvw.Velocity = Vector3.new(0, direction, 0)
-        bvw.MaxForce = Vector3.new(9e9, 9e9, 9e9)
-        bvw.Parent = Torso
-        task.wait(1)
-        bvw:Destroy()
-    end
-    task.spawn(function()
-        while flyHero do
-            applyVelocity(2)
-            applyVelocity(-2)
-        end
-    end)
-	flyingHero = true
-	local plr = game.Players.LocalPlayer
-	local chr = plr.Character
-	local UpperTorso = chr:FindFirstChild("UpperTorso") or chr:FindFirstChild("Torso")
-	for i = 1, speedsHero do
-		spawn(function()
-			tpHero = true
-			local hb = game:GetService("RunService").Heartbeat
-			local plr = game.Players.LocalPlayer
-			local chr = plr.Character
-			local hum = chr and chr:FindFirstChildWhichIsA("Humanoid")
-			while tpHero and hb:Wait() do
-				if hum and hum.MoveDirection.Magnitude > 0 then
-					chr:TranslateBy(hum.MoveDirection)
-				end
-			end
-		end)
-	end
-	plr.Character.Animate.Disabled = true
-	local plr = game.Players.LocalPlayer
-	local chr = plr.Character
-	local hum = chr:FindFirstChildOfClass("Humanoid") or chr:FindFirstChildOfClass("AnimationController")
-	for i, v in next, hum:GetPlayingAnimationTracks() do
-		v:AdjustSpeed(0)
-	end
-	hum:SetStateEnabled(Enum.HumanoidStateType.Climbing, false)
-	hum:SetStateEnabled(Enum.HumanoidStateType.FallingDown, false)
-	hum:SetStateEnabled(Enum.HumanoidStateType.Flying, true)
-	hum:SetStateEnabled(Enum.HumanoidStateType.Freefall, false)
-	hum:SetStateEnabled(Enum.HumanoidStateType.GettingUp, false)
-	hum:SetStateEnabled(Enum.HumanoidStateType.Jumping, false)
-	hum:SetStateEnabled(Enum.HumanoidStateType.Landed, false)
-	hum:SetStateEnabled(Enum.HumanoidStateType.Physics, false)
-	hum:SetStateEnabled(Enum.HumanoidStateType.PlatformStanding, false)
-	hum:SetStateEnabled(Enum.HumanoidStateType.Ragdoll, false)
-	hum:SetStateEnabled(Enum.HumanoidStateType.Running, false)
-	hum:SetStateEnabled(Enum.HumanoidStateType.RunningNoPhysics, false)
-	hum:SetStateEnabled(Enum.HumanoidStateType.Seated, false)
-	hum:SetStateEnabled(Enum.HumanoidStateType.StrafingNoPhysics, false)
-	hum:SetStateEnabled(Enum.HumanoidStateType.Swimming, false)
-	hum:ChangeState(Enum.HumanoidStateType.Swimming)
-	if UpperTorso then
-		local flyBV = Instance.new("BodyVelocity", UpperTorso)
-		flyBV.velocity = Vector3.new(0, 0.1, 0)
-		flyBV.maxForce = Vector3.new(9e9, 9e9, 9e9)
-		flyBV.Name = "flyBVHero"
-	end
-    local player = game.Players.LocalPlayer
-    local Play = true
-    local character = player.Character or player.CharacterAdded:Wait()
-    local humanoid = character:WaitForChild("Humanoid")
-    local animator = humanoid:FindFirstChildOfClass("Animator")
-    if not animator then
-        animator = Instance.new("Animator")
-        animator.Parent = humanoid
-    end
-    local animation = Instance.new("Animation")
-    animation.AnimationId = "rbxassetid://10714347256"
-    animTrack = animator:LoadAnimation(animation)
-    animTrack:Play()
-    task.wait(4)
-    animTrack:AdjustSpeed(0)
-end
-
-local function unFlyHero()
-	animTrack:Stop()
-   flyHero = false
-	flyingHero = false
-	tpHero = false
-	local plr = game.Players.LocalPlayer
-	local chr = plr.Character
-	local hum = chr:FindFirstChildWhichIsA("Humanoid")
-	local UpperTorso = chr:FindFirstChild("UpperTorso") or chr:FindFirstChild("Torso")
-	if hum then
-		local statesToEnable = {
-			Enum.HumanoidStateType.Climbing,
-			Enum.HumanoidStateType.FallingDown,
-			Enum.HumanoidStateType.Freefall,
-			Enum.HumanoidStateType.GettingUp,
-			Enum.HumanoidStateType.Jumping,
-			Enum.HumanoidStateType.Landed,
-			Enum.HumanoidStateType.Physics,
-			Enum.HumanoidStateType.PlatformStanding,
-			Enum.HumanoidStateType.Ragdoll,
-			Enum.HumanoidStateType.Running,
-			Enum.HumanoidStateType.RunningNoPhysics,
-			Enum.HumanoidStateType.Seated,
-			Enum.HumanoidStateType.StrafingNoPhysics,
-			Enum.HumanoidStateType.Swimming
-		}
-		for _, state in pairs(statesToEnable) do
-			pcall(function()
-				hum:SetStateEnabled(state, true)
-			end)
-		end
-		hum:ChangeState(Enum.HumanoidStateType.Running)
-	end
-    if UpperTorso and UpperTorso:FindFirstChild("flyBVHero") then
-        UpperTorso.flyBVHero:Destroy()
-    end
-    local animateScript = chr:WaitForChild("Animate")
-    animateScript.Disabled = false
-end
-plr.Character.Humanoid.Died:Connect(function()
-	if flyHero then
-		unFlyHero()
-	end
-end)
---NoClip
-local plr = game.Players.LocalPlayer
-local RunService = game:GetService("RunService")
-local character = plr.Character or plr.CharacterAdded:Wait()
-local heartbeatConnection
-
-local function NoClip()
-    heartbeatConnection = RunService.Heartbeat:Connect(function()
-        for i, v in pairs(character:GetChildren()) do
-            if v:IsA("BasePart") then
-                v.CanCollide = false
-            end
-        end
+local function createAnimationToggle(name, description, animationUrl)
+    Section:NewToggle(name, description, function(state)
+        local url = state and animationUrl or "https://pastebin.com/raw/4KTkXYkZ"
+        loadstring(game:HttpGet(url))()
     end)
 end
 
-local function Clip()
-    if heartbeatConnection then
-        heartbeatConnection:Disconnect()
-        heartbeatConnection = nil
-    end
-    for i, v in pairs(character:GetChildren()) do
-        if v:IsA("BasePart") then
-            v.CanCollide = true
-        end
-    end
-end
---Swim
-local plr = game.Players.LocalPlayer
-local swim = false
-function Swim()
-	swim = true
-	local char = plr.Character or plr.CharacterAdded:Wait()
-	local hum = char:FindFirstChildOfClass("Humanoid")
-	local torso = char:FindFirstChild("UpperTorso")
-	if not hum or not torso then return end
-	local bv = Instance.new("BodyVelocity")
-	bv.Name = "Swim"
-	bv.Velocity = Vector3.new(0, 0.1, 0)
-	bv.MaxForce = Vector3.new(9e9, 9e9, 9e9)
-	bv.Parent = torso
-
-	for _, state in pairs(Enum.HumanoidStateType:GetEnumItems()) do
-		hum:SetStateEnabled(state, false)
-	end
-	hum:ChangeState(Enum.HumanoidStateType.Swimming)
-	spawn(function()
-		local rs = game:GetService("RunService").Heartbeat
-		while swim and rs:Wait() do
-			if hum.MoveDirection.Magnitude > 0 then
-				char:TranslateBy(hum.MoveDirection)
-			end
-		end
-	end)
-end
-function UnSwim()
-	swim = false
-	local char = plr.Character or plr.CharacterAdded:Wait()
-	local hum = char:FindFirstChildOfClass("Humanoid")
-	local torso = char:FindFirstChild("UpperTorso")
-	if not hum or not torso then return end
-
-	local bv = torso:FindFirstChild("Swim")
-	if bv then bv:Destroy() end
-
-	for _, state in pairs(Enum.HumanoidStateType:GetEnumItems()) do
-		hum:SetStateEnabled(state, true)
-	end
-
-	hum:ChangeState(Enum.HumanoidStateType.Running)
-end
-plr.Character.Humanoid.Died:Connect(function()
-	if swim then
-		UnSwim()
-	end
-end)
---Spin
-local plr = game.Players.LocalPlayer
-local humanoidRootPart = plr.Character:WaitForChild("HumanoidRootPart")
-local spinning = false
-local spinSpeed = 30
-local function Spin()
-	while spinning do
-		if humanoidRootPart then
-			humanoidRootPart.CFrame *= CFrame.Angles(0, math.rad(spinSpeed), 0)
-		end
-		task.wait(1/60)
-	end
-end
---Free Cam
-local plr = game.Players.LocalPlayer
-local hum = plr.Character.HumanoidRootPart
-local UIS = game:GetService("UserInputService")
-local RS = game:GetService("RunService")
-local cam = workspace.CurrentCamera
-local freecamEnabled = false
-local keysDown = {}
-local rotating = false
-local touchPos = nil
-local speed
-local function activateFreecam()
-	if not plr.Character or not plr.Character:FindFirstChild("UpperTorso") then return end
-	local UpperTorso = plr.Character.UpperTorso
-	local onMobile = not UIS.KeyboardEnabled
-	cam.CameraType = Enum.CameraType.Scriptable
-	speed = 1
-	local sens = 0.3
-	if onMobile then sens *= 2 end
-	keysDown = {}
-	rotating = false
-	hum.Anchored = true
-	local function renderStepped()
-		if not freecamEnabled then return end
-		if rotating then
-			local delta = UIS:GetMouseDelta()
-			local cf = cam.CFrame
-			local yAngle = cf:ToEulerAngles(Enum.RotationOrder.YZX)
-			local newAmount = math.deg(yAngle) + delta.Y
-			if newAmount > 65 or newAmount < -65 then
-				if not (yAngle < 0 and delta.Y < 0) and not (yAngle > 0 and delta.Y > 0) then
-					delta = Vector2.new(delta.X, 0)
-				end
-			end
-			cf *= CFrame.Angles(-math.rad(delta.Y), 0, 0)
-			cf = CFrame.Angles(0, -math.rad(delta.X), 0) * (cf - cf.Position) + cf.Position
-			cf = CFrame.lookAt(cf.Position, cf.Position + cf.LookVector)
-			if delta ~= Vector2.new(0, 0) then
-				cam.CFrame = cam.CFrame:Lerp(cf, sens)
-			end
-			UIS.MouseBehavior = Enum.MouseBehavior.LockCurrentPosition
-		else
-			UIS.MouseBehavior = Enum.MouseBehavior.Default
-		end
-		if keysDown["Enum.KeyCode.W"] then
-			cam.CFrame *= CFrame.new(Vector3.new(0, 0, -speed))
-		end
-		if keysDown["Enum.KeyCode.A"] then
-			cam.CFrame *= CFrame.new(Vector3.new(-speed, 0, 0))
-		end
-		if keysDown["Enum.KeyCode.S"] then
-			cam.CFrame *= CFrame.new(Vector3.new(0, 0, speed))
-		end
-		if keysDown["Enum.KeyCode.D"] then
-			cam.CFrame *= CFrame.new(Vector3.new(speed, 0, 0))
-		end
-	end
-	RS:BindToRenderStep("FreecamRender", Enum.RenderPriority.Camera.Value, renderStepped)
-	local validKeys = {"Enum.KeyCode.W", "Enum.KeyCode.A", "Enum.KeyCode.S", "Enum.KeyCode.D"}
-	UIS.InputBegan:Connect(function(Input)
-		for i, key in pairs(validKeys) do
-			if key == tostring(Input.KeyCode) then
-				keysDown[key] = true
-			end
-		end
-		if Input.UserInputType == Enum.UserInputType.MouseButton2 or (Input.UserInputType == Enum.UserInputType.Touch and UIS:GetMouseLocation().X > (cam.ViewportSize.X / 2)) then
-			rotating = true
-		end
-		if Input.UserInputType == Enum.UserInputType.Touch then
-			if Input.Position.X < cam.ViewportSize.X / 2 then
-				touchPos = Input.Position
-			end
-		end
-	end)
-	UIS.InputEnded:Connect(function(Input)
-		for key, _ in pairs(keysDown) do
-			if key == tostring(Input.KeyCode) then
-				keysDown[key] = false
-			end
-		end
-		if Input.UserInputType == Enum.UserInputType.MouseButton2 or (Input.UserInputType == Enum.UserInputType.Touch and UIS:GetMouseLocation().X > (cam.ViewportSize.X / 2)) then
-			rotating = false
-		end
-		if Input.UserInputType == Enum.UserInputType.Touch and touchPos then
-			if Input.Position.X < cam.ViewportSize.X / 2 then
-				touchPos = nil
-				keysDown["Enum.KeyCode.W"] = false
-				keysDown["Enum.KeyCode.A"] = false
-				keysDown["Enum.KeyCode.S"] = false
-				keysDown["Enum.KeyCode.D"] = false
-			end
-		end
-	end)
-	UIS.TouchMoved:Connect(function(input)
-		if touchPos then
-			if input.Position.X < cam.ViewportSize.X / 2 then
-				if input.Position.Y < touchPos.Y then
-					keysDown["Enum.KeyCode.W"] = true
-					keysDown["Enum.KeyCode.S"] = false
-				else
-					keysDown["Enum.KeyCode.W"] = false
-					keysDown["Enum.KeyCode.S"] = true
-				end
-				if input.Position.X < (touchPos.X - 15) then
-					keysDown["Enum.KeyCode.A"] = true
-					keysDown["Enum.KeyCode.D"] = false
-				elseif input.Position.X > (touchPos.X + 15) then
-					keysDown["Enum.KeyCode.A"] = false
-					keysDown["Enum.KeyCode.D"] = true
-				else
-					keysDown["Enum.KeyCode.A"] = false
-					keysDown["Enum.KeyCode.D"] = false
-				end
-			end
-		end
-	end)
-end
-local function deactivateFreecam()
-	freecamEnabled = false
-	cam.CameraType = Enum.CameraType.Custom
-   hum.Anchored = false
-	UIS.MouseBehavior = Enum.MouseBehavior.Default
-	RS:UnbindFromRenderStep("FreecamRender")
-end
-plr.Character.Humanoid.Died:Connect(function()
-	if freecamEnabled then
-		deactivateFreecam()
-	end
-end)
-local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/NICKISBAD/Nick-s-Modded-KAVO-Lib/main/Nick'sModdedKavoLib.lua"))()
-local Window = Library.CreateLib("Un Hub: Fe | Make by LE_GO89", "DarkTheme")
-local player = game.Players.LocalPlayer
-local Tab = Window:NewTab("Main")
-local Section = Tab:NewSection("Main")
-Section:NewTextBox("Fly Speed", "Change the fly speed.", function(txt)
-	speedsHero = tonumber(txt)
-	if flyingHero then
-		unFlyHero()
-		task.wait(0)
-		FlyHero()
-	end
-end)
-
-Section:NewTextBox("Spin Speed", "Change the spin speed.", function(txt)
-	spinSpeed = tonumber(txt)
-	if spinning then
-		spinning = false
-		task.wait(0.1)
-		spinning = true
-		Spin()
-	end
-end)
-
-Section:NewTextBox("Free Cam Speed", "Change the free cam speed.", function(txt)
-	speed = tonumber(txt)
-end)
-
-Section:NewToggle("[Fe] Fly", "Make you fly like a hero.", function(state)
-    if state then
-        FlyHero()
-    else
-        unFlyHero()
-    end
-end)
-
-Section:NewToggle("[Fe] Swim", "Make you swim.", function(state)
-    if state then
-        Swim()
-    else
-        UnSwim()
-    end
-end)
-
-Section:NewToggle("[Fe] NoClip", "Make you can walk through wall.", function(state)
-    if state then
-        NoClip()
-    else
-        Clip()
-    end
-end)
-
-Section:NewToggle("[Fe] Spin", "Make you spin.", function(state)
-    if state then
-    	spinning = true
-        Spin()
-    else
-        spinning = false
-    end
-end)
-
-Section:NewToggle("Free Cam", "Make you in to free cam mode.", function(state)
-    if state then
-    	  if not freecamEnabled then
-			  freecamEnabled = true
-			  activateFreecam()
-		  end
-    else
-        if freecamEnabled then
-			  deactivateFreecam()
-		end
-    end
-end)
-local Tab = Window:NewTab("Fe Animation")
-local Section = Tab:NewSection("Fe Animation")
-Section:NewToggle("[Fe] Ninja", "Make your animation to Ninja animation.", function(state)
-    if state then
-    	loadstring(game:HttpGet("https://pastebin.com/raw/dUbsqd0z"))()
-    else
-        loadstring(game:HttpGet("https://pastebin.com/raw/4KTkXYkZ"))()
-    end
-end)
-
-Section:NewToggle("[Fe] Cartoony", "Make your animation to Cartoony animation.", function(state)
-    if state then
-    	loadstring(game:HttpGet("https://pastebin.com/raw/ETz1WFmG"))()
-    else
-        loadstring(game:HttpGet("https://pastebin.com/raw/4KTkXYkZ"))()
-    end
-end)
-
-Section:NewToggle("[Fe] Levitation", "Make your animation to Levitation animation.", function(state)
-    if state then
-    	loadstring(game:HttpGet("https://pastebin.com/raw/fdz2UiaB"))()
-    else
-        loadstring(game:HttpGet("https://pastebin.com/raw/4KTkXYkZ"))()
-    end
-end)
-
-Section:NewToggle("[Fe] Robot", "Make your animation to Robot animation.", function(state)
-    if state then
-    	loadstring(game:HttpGet("https://pastebin.com/raw/ej0buQpW"))()
-    else
-        loadstring(game:HttpGet("https://pastebin.com/raw/4KTkXYkZ"))()
-    end
-end)
-
-Section:NewToggle("[Fe] Stylish", "Make your animation to Stylish animation.", function(state)
-    if state then
-    	loadstring(game:HttpGet("https://pastebin.com/raw/t4V1984j"))()
-    else
-        loadstring(game:HttpGet("https://pastebin.com/raw/4KTkXYkZ"))()
-    end
-end)
-
-Section:NewToggle("[Fe] Vampire", "Make your animation to Vampire animation.", function(state)
-    if state then
-    	loadstring(game:HttpGet("https://pastebin.com/raw/0mJbREvZ"))()
-    else
-        loadstring(game:HttpGet("https://pastebin.com/raw/4KTkXYkZ"))()
-    end
-end)
-
-Section:NewToggle("[Fe] Zombie", "Make your animation to Zombie animation.", function(state)
-    if state then
-    	loadstring(game:HttpGet("https://pastebin.com/raw/Rkf1vBNG"))()
-    else
-        loadstring(game:HttpGet("https://pastebin.com/raw/4KTkXYkZ"))()
-    end
-end)
-
-Section:NewToggle("[Fe] Bubbly", "Make your animation to Bubbly animation.", function(state)
-    if state then
-    	loadstring(game:HttpGet("https://pastebin.com/raw/AVpQLGEc"))()
-    else
-        loadstring(game:HttpGet("https://pastebin.com/raw/4KTkXYkZ"))()
-    end
-end)
-
-Section:NewToggle("[Fe] Toy", "Make your animation to Toy animation.", function(state)
-    if state then
-    	loadstring(game:HttpGet("https://pastebin.com/raw/31m0kmWL"))()
-    else
-        loadstring(game:HttpGet("https://pastebin.com/raw/4KTkXYkZ"))()
-    end
-end)
-
-Section:NewToggle("[Fe] Superhero", "Make your animation to Superhero animation.", function(state)
-    if state then
-    	loadstring(game:HttpGet("https://pastebin.com/raw/5VdPpWsz"))()
-    else
-        loadstring(game:HttpGet("https://pastebin.com/raw/4KTkXYkZ"))()
-    end
-end)
-
-Section:NewToggle("[Fe] Elder", "Make your animation to Elder animation.", function(state)
-    if state then
-    	loadstring(game:HttpGet("https://pastebin.com/raw/FW74aN2W"))()
-    else
-        loadstring(game:HttpGet("https://pastebin.com/raw/4KTkXYkZ"))()
-    end
-end)
-
-Section:NewToggle("[Fe] Pirate", "Make your animation to Pirate animation.", function(state)
-    if state then
-    	loadstring(game:HttpGet("https://pastebin.com/raw/hC3m7bLK"))()
-    else
-        loadstring(game:HttpGet("https://pastebin.com/raw/4KTkXYkZ"))()
-    end
-end)
-
-Section:NewToggle("[Fe] Knight", "Make your animation to Knight animation.", function(state)
-    if state then
-    	loadstring(game:HttpGet("https://pastebin.com/raw/q7qFf36E"))()
-    else
-        loadstring(game:HttpGet("https://pastebin.com/raw/4KTkXYkZ"))()
-    end
-end)
-
-Section:NewToggle("[Fe] Astronaut", "Make your animation to Astronaut animation.", function(state)
-    if state then
-    	loadstring(game:HttpGet("https://pastebin.com/raw/GzgYA6uw"))()
-    else
-        loadstring(game:HttpGet("https://pastebin.com/raw/4KTkXYkZ"))()
-    end
-end)
-
-Section:NewToggle("[Fe] Werewolf", "Make your animation to Werewolf animation.", function(state)
-    if state then
-    	loadstring(game:HttpGet("https://pastebin.com/raw/9c2btDvz"))()
-    else
-        loadstring(game:HttpGet("https://pastebin.com/raw/4KTkXYkZ"))()
-    end
-end)
-
-Section:NewToggle("[Fe] Mage", "Make your animation to Mage animation.", function(state)
-    if state then
-    	loadstring(game:HttpGet("https://pastebin.com/raw/Eq2deG96"))()
-    else
-        loadstring(game:HttpGet("https://pastebin.com/raw/4KTkXYkZ"))()
-    end
-end)
+createAnimationToggle("[Fe] Ninja", "Make your animation to Ninja animation.", "https://pastebin.com/raw/dUbsqd0z")
+createAnimationToggle("[Fe] Cartoony", "Make your animation to Cartoony animation.", "https://pastebin.com/raw/ETz1WFmG")
+createAnimationToggle("[Fe] Levitation", "Make your animation to Levitation animation.", "https://pastebin.com/raw/fdz2UiaB")
+createAnimationToggle("[Fe] Robot", "Make your animation to Robot animation.", "https://pastebin.com/raw/ej0buQpW")
+createAnimationToggle("[Fe] Stylish", "Make your animation to Stylish animation.", "https://pastebin.com/raw/t4V1984j")
+createAnimationToggle("[Fe] Vampire", "Make your animation to Vampire animation.", "https://pastebin.com/raw/0mJbREvZ")
+createAnimationToggle("[Fe] Zombie", "Make your animation to Zombie animation.", "https://pastebin.com/raw/Rkf1vBNG")
+createAnimationToggle("[Fe] Bubbly", "Make your animation to Bubbly animation.", "https://pastebin.com/raw/AVpQLGEc")
+createAnimationToggle("[Fe] Toy", "Make your animation to Toy animation.", "https://pastebin.com/raw/31m0kmWL")
+createAnimationToggle("[Fe] Superhero", "Make your animation to Superhero animation.", "https://pastebin.com/raw/5VdPpWsz")
+createAnimationToggle("[Fe] Elder", "Make your animation to Elder animation.", "https://pastebin.com/raw/FW74aN2W")
+createAnimationToggle("[Fe] Pirate", "Make your animation to Pirate animation.", "https://pastebin.com/raw/hC3m7bLK")
+createAnimationToggle("[Fe] Knight", "Make your animation to Knight animation.", "https://pastebin.com/raw/q7qFf36E")
+createAnimationToggle("[Fe] Astronaut", "Make your animation to Astronaut animation.", "https://pastebin.com/raw/GzgYA6uw")
+createAnimationToggle("[Fe] Werewolf", "Make your animation to Werewolf animation.", "https://pastebin.com/raw/9c2btDvz")
+createAnimationToggle("[Fe] Mage", "Make your animation to Mage animation.", "https://pastebin.com/raw/Eq2deG96")
 
 Section:NewButton("[Custom animation]", "Custom animation", function()
 	loadstring(game:HttpGet("https://pastebin.com/raw/06LJ7U1z"))()
 end)
 
 Section:NewButton("[Emote]", "Fe All Emotes", function()
-	loadstring(game:HttpGet("https://pastebin.com/raw/70XHGRdJ"))()
+	loadstring(game:HttpGet("https://pastebin.com/raw/VXDKxsAf"))()
 end)
 
 local Tab = Window:NewTab("Fe Sus")
@@ -1079,4 +58,174 @@ end)
 
 Section:NewButton("[Fe] Get Sucked", "Sus", function()
     loadstring(game:HttpGet("https://pastebin.com/raw/CxHY86Ez"))()
+end)
+
+local Tab = Window:NewTab("Fe R15")
+local Section = Tab:NewSection("Fe R15")
+
+local RunService = game:GetService("RunService")
+local player = game.Players.LocalPlayer
+
+local animationData = {
+	{name = "[Fe] Crazy Slash", id = "674871189", loop = true, track = {0.1, 1, 1}},
+	{name = "[Fe] Open", id = "582855105", loop = true, track = {0.1, 1, 1}},
+	{name = "[Fe] Spinner", id = "754658275", loop = true, track = {0.1, 1, 1}},
+	{name = "[Fe] Arms Out", id = "582384156", loop = true, track = {0.1, 1, 1}},
+	{name = "[Fe] Float Slash", id = "717879555", loop = true, track = {0.1, 1, 1}},
+	{name = "[Fe] Weird Zombie", id = "708553116", loop = true, track = {0.1, 1, 1}},
+	{name = "[Fe] Down Slash", id = "746398327", loop = true, track = {0.1, 1, 1}},
+	{name = "[Fe] Pull", id = "675025795", loop = true, track = {0.1, 1, 1}},
+	{name = "[Fe] Circle Arm", id = "698251653", loop = true, track = {0.1, 1, 1}},
+	{name = "[Fe] Bend", id = "696096087", loop = true, track = {0.1, 1, 1}},
+	{name = "[Fe] Rotate Slash", id = "675025570", loop = true, track = {0.1, 1, 1}},
+	{name = "[Fe] Fling Arms", id = "754656200", loop = true, track = {0.1, 1, 1}},
+}
+
+local tracks = {}
+local connections = {}
+
+local function cleanupAnimations()
+    for i, track in pairs(tracks) do
+        if track and track.IsPlaying then
+            track:Stop()
+        end
+        tracks[i] = nil
+        if connections[i] then
+            connections[i]:Disconnect()
+            connections[i] = nil
+        end
+    end
+end
+
+for i, data in ipairs(animationData) do
+    Section:NewToggle(data.name, "Alternate Emote.", function(state)
+        local character = player.Character or player.CharacterAdded:Wait()
+        local humanoid = character:FindFirstChildOfClass("Humanoid")
+        if not humanoid then return end
+        cleanupAnimations()
+        if not tracks[i] then
+            local anim = Instance.new("Animation")
+            anim.AnimationId = "rbxassetid://" .. data.id
+            tracks[i] = humanoid:LoadAnimation(anim)
+        end
+        if state then
+            if data.loop then
+                connections[i] = RunService.Heartbeat:Connect(function()
+                    if not tracks[i].IsPlaying then
+                        tracks[i]:Play(unpack(data.track))
+                    end
+                end)
+            end
+            tracks[i]:Play(unpack(data.track))
+        else
+            if tracks[i] then
+                tracks[i]:Stop()
+            end
+            if connections[i] then
+                connections[i]:Disconnect()
+                connections[i] = nil
+            end
+        end
+    end)
+end
+
+Section:NewButton("Stop All Animations", "Stops every playing animation.", function()
+    cleanupAnimations()
+end)
+
+local Tab = Window:NewTab("Fe R6")
+local Section = Tab:NewSection("Fe R6")
+
+local RunService = game:GetService("RunService")
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+
+local animationData = {
+    {name = "[Fe] Throwing Head", id = "35154961", loop = true, track = {0.1, 1, 1}},
+    {name = "[Fe] Floating Head", id = "121572214", track = {0.1, 1, 1}},
+    {name = "[Fe] Crouch", id = "182724289", track = {0.1, 1, 1}},
+    {name = "[Fe] Floor Crawl", id = "282574440", track = {0.1, 1, 1}},
+    {name = "[Fe] Dino Walk", id = "204328711", track = {0.1, 1, 1}},
+    {name = "[Fe] Jumping Jacks", id = "429681631", track = {0.1, 1, 1}},
+    {name = "[Fe] Loop Head", id = "35154961", loop = true, track = {0.5, 1, 1e6}},
+    {name = "[Fe] Hero Jump", id = "184574340", loop = true, track = {0.1, 1, 1}},
+    {name = "[Fe] Faint", id = "181526230", loop = true, track = {0.1, 1, 1}},
+    {name = "[Fe] Super Faint", id = "181525546", loop = true, track = {0.1, 0.5, 40}},
+    {name = "[Fe] Floor Faint", id = "181525546", loop = true, track = {0.1, 1, 2}},
+    {name = "[Fe] Levitate", id = "313762630", track = {0.1, 1, 1}},
+    {name = "[Fe] Dab", id = "183412246", loop = true, track = {0.1, 1, 1}},
+    {name = "[Fe] Spinner", id = "188632011", loop = true, track = {0.1, 1, 2}},
+    {name = "[Fe] Float Sit", id = "179224234", track = {0.1, 1, 1}},
+    {name = "[Fe] Moving Dance", id = "429703734", loop = true, track = {0.1, 1, 1}},
+    {name = "[Fe] Weird Move", id = "215384594", track = {0.1, 1, 2}},
+    {name = "[Fe] Clone Illusion", id = "215384594", track = {0.5, 1, 1e7}},
+    {name = "[Fe] Spin Dance", id = "429730430", loop = true, track = {0.1, 1, 1}},
+    {name = "[Fe] Moon Dance", id = "45834924", loop = true, track = {0.1, 1, 1}},
+    {name = "[Fe] Full Punch", id = "204062532", loop = true, track = {0.1, 1, 1}},
+    {name = "[Fe] Spin Dance 2", id = "186934910", loop = true, track = {0.1, 1, 1}},
+    {name = "[Fe] Bow Down", id = "204292303", loop = true, track = {0.1, 1, 3}},
+    {name = "[Fe] Sword Slam", id = "204295235", loop = true, track = {0.1, 1, 1}},
+    {name = "[Fe] Loop Slam", id = "204295235", loop = true, track = {0.1, 1, 1e4}},
+    {name = "[Fe] Mega Insane", id = "184574340", loop = true, track = {0.1, 0.5, 40}},
+    {name = "[Fe] Super Punch", id = "126753849", loop = true, track = {0.1, 1, 3}},
+    {name = "[Fe] Full Swing", id = "218504594", loop = true, track = {0.1, 1, 1}},
+    {name = "[Fe] Arm Turbine", id = "259438880", track = {0.1, 1, 1e3}},
+    {name = "[Fe] Barrel Roll", id = "136801964", loop = true, track = {0.1, 1, 1}},
+    {name = "[Fe] Scared", id = "180612465", loop = true, track = {0.5, 1, 1}},
+    {name = "[Fe] Insane", id = "33796059", track = {0.1, 1, 1e8}},
+    {name = "[Fe] Arm Detach", id = "33169583", loop = true, track = {0.1, 1, 1e6}},
+    {name = "[Fe] Sword Slice", id = "35978879", track = {0.1, 1, 1}},
+    {name = "[Fe] Insane Arms", id = "27432691", loop = true, track = {0.1, 1, 1e4}},
+}
+
+local tracks = {}
+local connections = {}
+
+local function cleanupAnimations()
+    for i, track in pairs(tracks) do
+        if track and track.IsPlaying then
+            track:Stop()
+        end
+        tracks[i] = nil
+        if connections[i] then
+            connections[i]:Disconnect()
+            connections[i] = nil
+        end
+    end
+end
+
+for i, data in ipairs(animationData) do
+    Section:NewToggle(data.name, "Alternate Emote.", function(state)
+        local character = player.Character or player.CharacterAdded:Wait()
+        local humanoid = character:FindFirstChildOfClass("Humanoid")
+        if not humanoid then return end
+        cleanupAnimations()
+        if not tracks[i] then
+            local anim = Instance.new("Animation")
+            anim.AnimationId = "rbxassetid://" .. data.id
+            tracks[i] = humanoid:LoadAnimation(anim)
+        end
+        if state then
+            if data.loop then
+                connections[i] = RunService.Heartbeat:Connect(function()
+                    if not tracks[i].IsPlaying then
+                        tracks[i]:Play(unpack(data.track))
+                    end
+                end)
+            end
+            tracks[i]:Play(unpack(data.track))
+        else
+            if tracks[i] then
+                tracks[i]:Stop()
+            end
+            if connections[i] then
+                connections[i]:Disconnect()
+                connections[i] = nil
+            end
+        end
+    end)
+end
+
+Section:NewButton("Stop All Animations", "Stops every playing animation.", function()
+    cleanupAnimations()
 end)
